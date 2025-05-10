@@ -1,462 +1,594 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kết quả học tập - Đăng nhập &amp; Bảng điểm</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-<style>
-  body, html {
-    height: 100%;
-    margin: 0;
-    background-color: #f9fafb;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  #login-container, #main-content {
-    max-width: 400px;
-    background: white;
-    padding: 2rem;
-    margin: 3rem auto;
-    border-radius: 12px;
-    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-    transition: box-shadow 0.3s ease;
-  }
-  #login-container:hover, #main-content:hover {
-    box-shadow: 0 14px 22px rgba(0,0,0,0.15);
-  }
-  #main-content {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 1.5rem 2rem;
-    border-radius: 12px;
-    background: white;
-    box-shadow: 0 8px 14px rgba(0,0,0,0.12);
-  }
-  #error-message {
-    color: #dc2626;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    display: none;
-  }
-  .show-password-btn {
-    position: absolute;
-    right: 12px;
-    top: 38px;
-    cursor: pointer;
-    color: #666;
-    user-select: none;
-    transition: color 0.25s ease;
-  }
-  .show-password-btn:hover {
-    color: #2563eb;
-  }
-  .relative-container {
-    position: relative;
-  }
-  @media (max-width: 640px) {
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kết quả học tập - Đăng nhập &amp; Bảng điểm</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      background-color: #f9fafb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    #login-container, #main-content {
+      max-width: 400px;
+      background: white;
+      padding: 2rem;
+      margin: 3rem auto;
+      border-radius: 12px;
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+      transition: box-shadow 0.3s ease;
+    }
+    #login-container:hover, #main-content:hover {
+      box-shadow: 0 14px 22px rgba(0,0,0,0.15);
+    }
     #main-content {
-      max-width: 95vw;
-      margin: 1rem auto;
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1.5rem 2rem;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 8px 14px rgba(0,0,0,0.12);
+    }
+    #error-message, #register-error-message, #register-success-message {
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    #error-message, #register-error-message {
+      color: #dc2626;
+    }
+    #register-success-message {
+      color: #16a34a;
+    }
+    .show-password-btn {
+      position: absolute;
+      right: 12px;
+      top: 38px;
+      cursor: pointer;
+      color: #666;
+      user-select: none;
+      transition: color 0.25s ease;
+    }
+    .show-password-btn:hover {
+      color: #2563eb;
+    }
+    .relative-container {
+      position: relative;
+    }
+    @media (max-width: 640px) {
+      #main-content {
+        max-width: 95vw;
+        margin: 1rem auto;
+        padding: 1rem;
+      }
+      #login-container {
+        margin: 2rem 1rem;
+        max-width: 100%;
+        padding: 1.5rem;
+      }
+    }
+    .score-separator {
+      border-left: 1px solid #d1d5db;
+    }
+    #compare-scores {
+      border: 1px solid #d1d5db;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: #f9fafb;
+    }
+    input[readonly] {
+      background-color: #f3f4f6;
+      cursor: default;
+    }
+    #chart-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: #f9fafb;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
       padding: 1rem;
+      height: 400px;
+      box-shadow: inset 0 0 6px #a7b7c7;
     }
-    #login-container {
-      margin: 2rem 1rem;
-      max-width: 100%;
-      padding: 1.5rem;
+    #scoresChart {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
     }
-  }
-  .score-separator {
-    border-left: 1px solid #d1d5db;
-  }
-  #compare-scores {
-    border: 1px solid #d1d5db;
-    padding: 16px;
-    border-radius: 8px;
-    background-color: #f9fafb;
-  }
-  input[readonly] {
-    background-color: #f3f4f6;
-    cursor: default;
-  }
-  #chart-container {
-    max-width: 900px;
-    margin: 2rem auto;
-    background: #f9fafb;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-    padding: 1rem;
-    height: 400px;
-    box-shadow: inset 0 0 6px #a7b7c7;
-  }
-  #scoresChart {
-    width: 100% !important;
-    height: 100% !important;
-    display: block;
-  }
-  /* Highlight Vip text with gradient and glowing effect */
-  #student-name {
-    font-weight: 900;
-    font-size: 1.375rem; /* 22px */
-    background: linear-gradient(45deg, #ff9900, #ff0044, #ff66cc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow:
-       0 0 5px #ff9900,
-       0 0 10px #ff0055,
-       0 0 15px #ff66cc;
-    transition: text-shadow 0.3s ease;
-  }
-  #student-name:hover {
-    text-shadow:
-       0 0 8px #ff9900,
-       0 0 14px #ff0055,
-       0 0 20px #ff66cc,
-       0 0 30px #ffccff;
-  }
-
-  /* Improved styling for summary cards in Tổng kết */
-  section.summary-cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-  }
-  section.summary-cards > div {
-    flex: 1 1 210px;
-    max-width: 260px;
-    min-width: 210px;
-    background: linear-gradient(135deg, #3b82f6, #06b6d4);
-    color: white;
-    border-radius: 1rem;
-    padding: 1.25rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
-    cursor: default;
-    user-select: none;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  section.summary-cards > div:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.18);
-  }
-  /* Individual card color overrides */
-  section.summary-cards > div.kqht {
-    background: linear-gradient(135deg, #06b6d4, #3b82f6);
-  }
-  section.summary-cards > div.kqrl {
-    background: linear-gradient(135deg, #7c3aed, #9333ea);
-  }
-  section.summary-cards > div.dtb {
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-  }
-  section.summary-cards > div.danhhieu {
-    background: linear-gradient(135deg, #facc15, #ca8a04);
-    color: #fff !important; /* Changed text color to white */
-  }
-
-  /* Icon styles */
-  section.summary-cards i {
-    font-size: 1.8rem;
-    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
-  }
-  /* Enhanced star icon for Danh hiệu */
-  section.summary-cards > div.danhhieu i {
-    font-size: 2.8rem !important;
-    color: #facc15;
-    filter:
-      drop-shadow(0 0 5px #facc15)
-      drop-shadow(0 0 10px #ffc700)
-      drop-shadow(0 0 15px #fff200);
-    text-shadow:
-      0 0 6px #facc15,
-      0 0 12px #ffc700,
-      0 0 18px #fff200;
-  }
-
-  /* Text content inside cards with balanced font sizes */
-  section.summary-cards p.label {
-    font-weight: 600;
-    font-size: 0.95rem;
-    letter-spacing: 0.02em;
-    margin: 0 0 0.2rem;
-  }
-  section.summary-cards p.value {
-    font-weight: 700;
-    font-size: 1.1rem;
-    line-height: 1.15;
-    margin: 0;
-  }
-
-  /* Responsive adjustments for small mobile devices */
-  @media (max-width: 400px) {
+    /* Highlight Vip text with gradient and glowing effect */
+    #student-name {
+      font-weight: 900;
+      font-size: 1.375rem; /* 22px */
+      background: linear-gradient(45deg, #ff9900, #ff0044, #ff66cc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 5px #ff9900, 0 0 10px #ff0055, 0 0 15px #ff66cc;
+      transition: text-shadow 0.3s ease;
+    }
+    #student-name:hover {
+      text-shadow: 0 0 8px #ff9900, 0 0 14px #ff0055, 0 0 20px #ff66cc, 0 0 30px #ffccff;
+    }
+    /* Improved styling for summary cards in Tổng kết */
+    section.summary-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
     section.summary-cards > div {
-      min-width: 48%;
-      max-width: 48%;
-      padding: 1rem 1rem;
+      flex: 1 1 210px;
+      max-width: 260px;
+      min-width: 210px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: white;
+      border-radius: 1rem;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+      cursor: default;
+      user-select: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    section.summary-cards p.label {
-      font-size: 0.85rem;
+    section.summary-cards > div:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
     }
-    section.summary-cards p.value {
-      font-size: 1rem;
+    section.summary-cards > div.kqht {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+    }
+    section.summary-cards > div.kqrl {
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+    }
+    section.summary-cards > div.dtb {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+    }
+    section.summary-cards > div.danhhieu {
+      background: linear-gradient(135deg, #facc15, #ca8a04);
+      color: #fff !important;
     }
     section.summary-cards i {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
     }
-  }
-</style>
+    section.summary-cards > div.danhhieu i {
+      font-size: 2.8rem !important;
+      color: #facc15;
+      filter: drop-shadow(0 0 5px #facc15) drop-shadow(0 0 10px #ffc700) drop-shadow(0 0 15px #fff200);
+      text-shadow: 0 0 6px #facc15, 0 0 12px #ffc700, 0 0 18px #fff200;
+    }
+    section.summary-cards p.label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+      margin: 0 0 0.2rem;
+    }
+    section.summary-cards p.value {
+      font-weight: 700;
+      font-size: 1.1rem;
+      line-height: 1.15;
+      margin: 0;
+    }
+    @media (max-width: 400px) {
+      section.summary-cards > div {
+        min-width: 48%;
+        max-width: 48%;
+        padding: 1rem 1rem;
+      }
+      section.summary-cards p.label {
+        font-size: 0.85rem;
+      }
+      section.summary-cards p.value {
+        font-size: 1rem;
+      }
+      section.summary-cards i {
+        font-size: 1.5rem;
+      }
+    }
+    #switch-to-register {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #2563eb;
+      cursor: pointer;
+      user-select: none;
+    }
+    #switch-to-register:hover, #switch-to-login:hover {
+      text-decoration: underline;
+    }
+    #switch-to-login {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #2563eb;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 font-sans">
-
-  <!-- Đăng nhập -->
-  <main id="login-container" role="main" aria-label="Trang đăng nhập">
+<main id="login-container" role="main" aria-label="Trang đăng nhập và đăng ký">
+  <form id="login-form" class="space-y-5" novalidate aria-label="Form đăng nhập" tabindex="0">
     <h1 class="text-center text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Đăng nhập</h1>
     <div id="error-message" role="alert" aria-live="assertive"></div>
-    <form id="login-form" class="space-y-5" novalidate>
-      <div>
-        <label for="username" class="block font-semibold mb-1 text-gray-700">Tên đăng nhập</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          autocomplete="username"
-          required
-          aria-required="true"
-          aria-describedby="username-desc"
-          class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg"
-          placeholder="Nhập tên đăng nhập"
-          aria-invalid="false"
-        />
-        <p id="username-desc" class="sr-only">Tên đăng nhập là admin</p>
-      </div>
-      <div class="relative-container">
-        <label for="password" class="block font-semibold mb-1 text-gray-700">Mật khẩu</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          autocomplete="current-password"
-          required
-          aria-required="true"
-          aria-describedby="password-desc"
-          class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg"
-          placeholder="Nhập mật khẩu"
-          aria-invalid="false"
-        />
-        <i id="toggle-password" class="fas fa-eye show-password-btn" title="Hiện hoặc ẩn mật khẩu" role="button" tabindex="0" aria-pressed="false" aria-label="Hiện hoặc ẩn mật khẩu"></i>
-        <p id="password-desc" class="sr-only">Mật khẩu là 123456</p>
-      </div>
-      <button
-        type="submit"
-        class="w-full bg-gradient-to-r from-yellow-400 via-red-500 to-pink-600 text-white font-extrabold rounded-md py-3 hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-pink-600 transition shadow-lg tracking-wider text-lg"
-      >
-        Đăng nhập
-      </button>
-      <p class="text-sm text-gray-600 mt-3 select-text text-center">Tên đăng nhập: <b>admin</b> | Mật khẩu: <b>123456</b></p>
-    </form>
-  </main>
+    <div>
+      <label for="username" class="block font-semibold mb-1 text-gray-700">Tên đăng nhập</label>
+      <input type="text" id="username" name="username" autocomplete="username" required aria-required="true" aria-describedby="username-desc" class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg" placeholder="Nhập tên đăng nhập" aria-invalid="false" />
+      <p id="username-desc" class="sr-only">Nhập tên đăng nhập</p>
+    </div>
+    <div class="relative-container">
+      <label for="password" class="block font-semibold mb-1 text-gray-700">Mật khẩu</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required aria-required="true" aria-describedby="password-desc" class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg" placeholder="Nhập mật khẩu" aria-invalid="false" />
+      <i id="toggle-password" class="fas fa-eye show-password-btn" title="Hiện hoặc ẩn mật khẩu" role="button" tabindex="0" aria-pressed="false" aria-label="Hiện hoặc ẩn mật khẩu"></i>
+      <p id="password-desc" class="sr-only">Nhập mật khẩu</p>
+    </div>
+    <button type="submit" class="w-full bg-gradient-to-r from-yellow-400 via-red-500 to-pink-600 text-white font-extrabold rounded-md py-3 hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-pink-600 transition shadow-lg tracking-wider text-lg" >
+      Đăng nhập
+    </button>
+    <div id="switch-to-register" tabindex="0" role="button" aria-label="Chưa có tài khoản? Đăng ký">
+      Chưa có tài khoản? <b>Đăng ký</b>
+    </div>
+  </form>
+  <form id="register-form" class="space-y-5 hidden" novalidate aria-label="Form đăng ký" tabindex="0">
+    <h1 class="text-center text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Đăng ký</h1>
+    <div id="register-error-message" role="alert" aria-live="assertive"></div>
+    <div id="register-success-message" role="alert" aria-live="polite"></div>
+    <div>
+      <label for="reg-username" class="block font-semibold mb-1 text-gray-700">Tên đăng nhập</label>
+      <input
+        type="text"
+        id="reg-username"
+        name="reg-username"
+        autocomplete="username"
+        required
+        aria-required="true"
+        aria-describedby="reg-username-desc"
+        class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg"
+        placeholder="Nhập tên đăng nhập"
+        aria-invalid="false"
+      />
+      <p id="reg-username-desc" class="sr-only">Tên đăng nhập để đăng ký, không trùng admin hoặc tài khoản đã có</p>
+    </div>
+    <div class="relative-container">
+      <label for="reg-password" class="block font-semibold mb-1 text-gray-700">Mật khẩu</label>
+      <input
+        type="password"
+        id="reg-password"
+        name="reg-password"
+        autocomplete="new-password"
+        required
+        aria-required="true"
+        aria-describedby="reg-password-desc"
+        class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg"
+        placeholder="Nhập mật khẩu"
+        aria-invalid="false"
+      />
+      <i id="toggle-reg-password" class="fas fa-eye show-password-btn" title="Hiện hoặc ẩn mật khẩu đăng ký" role="button" tabindex="0" aria-pressed="false" aria-label="Hiện hoặc ẩn mật khẩu đăng ký"></i>
+      <p id="reg-password-desc" class="sr-only">Mật khẩu đăng ký</p>
+    </div>
+    <div class="relative-container">
+      <label for="reg-password-confirm" class="block font-semibold mb-1 text-gray-700">Xác nhận mật khẩu</label>
+      <input
+        type="password"
+        id="reg-password-confirm"
+        name="reg-password-confirm"
+        autocomplete="new-password"
+        required
+        aria-required="true"
+        aria-describedby="reg-password-confirm-desc"
+        class="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg"
+        placeholder="Nhập lại mật khẩu"
+        aria-invalid="false"
+      />
+      <i id="toggle-reg-password-confirm" class="fas fa-eye show-password-btn" title="Hiện hoặc ẩn mật khẩu xác nhận" role="button" tabindex="0" aria-pressed="false" aria-label="Hiện hoặc ẩn mật khẩu xác nhận"></i>
+      <p id="reg-password-confirm-desc" class="sr-only">Nhập lại mật khẩu đăng ký</p>
+    </div>
+    <button
+      type="submit"
+      class="w-full bg-gradient-to-r from-green-400 via-teal-500 to-blue-600 text-white font-extrabold rounded-md py-3 hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-blue-600 transition shadow-lg tracking-wider text-lg"
+    >
+      Đăng ký
+    </button>
+    <div id="switch-to-login" tabindex="0" role="button" aria-label="Đã có tài khoản? Đăng nhập" class="text-center mt-4 text-blue-600 cursor-pointer select-none hover:underline">
+      Đã có tài khoản? <b>Đăng nhập</b>
+    </div>
+  </form>
+</main>
 
-  <!-- Nội dung chính: Kết quả học tập -->
-  <div id="main-content" class="hidden bg-white text-gray-900 p-6 md:p-10 rounded-xl shadow-xl" tabindex="-1" aria-label="Nội dung kết quả học tập">
-    <div class="max-w-7xl mx-auto">
-      <header class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-        <h1 class="font-semibold text-gray-900 text-base md:text-2xl leading-tight mb-4 md:mb-0">
-          Kết quả học tập: <span id="student-name">Vip</span> - Lớp: <span class="font-bold" id="class-name">6A1</span>
-        </h1>
-        <form class="flex flex-wrap gap-4 items-center text-base text-gray-900 font-semibold">
-          <label for="namhoc" class="whitespace-nowrap">Năm học</label>
-          <select
-            id="namhoc"
-            name="namhoc"
-            class="border border-gray-300 rounded-md text-gray-900 text-base py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer shadow-sm"
-          >
-            <option>2023-2024</option>
-            <option>2024-2025</option>
-            <option>2025-2026</option>
-            <option>2026-2027</option>
-          </select>
-          <button id="logout-btn" class="ml-4 bg-red-600 hover:bg-red-700 text-white py-2 px-5 rounded-lg focus:outline-none focus:ring-4 focus:ring-red-700 font-semibold transition shadow-lg">
-            Đăng xuất
-          </button>
-        </form>
-      </header>
-
-      <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        <!-- Chuyên cần -->
-        <article>
-          <h2 class="flex items-center gap-3 text-blue-800 font-bold text-base mb-5 drop-shadow-sm">
-            <i class="fas fa-calendar-alt text-xl"></i> CHUYÊN CẦN
-          </h2>
-          <div class="flex flex-col sm:flex-row gap-8">
-            <div class="flex-1 bg-green-100 border border-green-300 rounded-xl p-6 shadow-md hover:shadow-lg transition cursor-default select-none">
-              <div class="flex items-center gap-3 mb-4">
-                <i class="fas fa-check-circle text-green-600 text-2xl"></i>
-                <p class="text-sm font-semibold text-green-800">Nghỉ có phép</p>
-              </div>
-              <p id="nghi-co-phep" class="text-teal-700 font-extrabold text-4xl leading-none">0</p>
-              <p class="text-gray-700 text-base">buổi</p>
+<div id="main-content" class="hidden bg-white text-gray-900 p-6 md:p-10 rounded-xl shadow-xl" tabindex="-1" aria-label="Nội dung kết quả học tập">
+  <div class="max-w-7xl mx-auto">
+    <header class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+      <h1 class="font-semibold text-gray-900 text-base md:text-2xl leading-tight mb-4 md:mb-0">
+        Kết quả học tập: <span id="student-name">Vip</span> - Lớp: <span class="font-bold" id="class-name">6A1</span>
+      </h1>
+      <form class="flex flex-wrap gap-4 items-center text-base text-gray-900 font-semibold" aria-label="Chọn năm học và đăng xuất">
+        <label for="namhoc" class="whitespace-nowrap">Năm học</label>
+        <select id="namhoc" name="namhoc" class="border border-gray-300 rounded-md text-gray-900 text-base py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer shadow-sm" >
+          <option>2023-2024</option>
+          <option>2024-2025</option>
+          <option>2025-2026</option>
+          <option>2026-2027</option>
+        </select>
+        <button id="logout-btn" class="ml-4 bg-red-600 hover:bg-red-700 text-white py-2 px-5 rounded-lg focus:outline-none focus:ring-4 focus:ring-red-700 font-semibold transition shadow-lg" type="button">
+          Đăng xuất
+        </button>
+      </form>
+    </header>
+    <!-- Nội dung chuyên cần, tổng kết, chọn học kỳ, bảng điểm, biểu đồ giữ nguyên -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <article>
+        <h2 class="flex items-center gap-3 text-blue-800 font-bold text-base mb-5 drop-shadow-sm">
+          <i class="fas fa-calendar-alt text-xl"></i> CHUYÊN CẦN
+        </h2>
+        <div class="flex flex-col sm:flex-row gap-8">
+          <div class="flex-1 bg-green-100 border border-green-300 rounded-xl p-6 shadow-md hover:shadow-lg transition cursor-default select-none" aria-label="Số buổi nghỉ có phép">
+            <div class="flex items-center gap-3 mb-4">
+              <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+              <p class="text-sm font-semibold text-green-800">Nghỉ có phép</p>
             </div>
-            <div class="flex-1 bg-purple-100 border border-purple-300 rounded-xl p-6 shadow-md hover:shadow-lg transition cursor-default select-none">
-              <div class="flex items-center gap-3 mb-4">
-                <i class="fas fa-times-circle text-purple-600 text-2xl"></i>
-                <p class="text-sm font-semibold text-purple-800">Nghỉ không phép</p>
-              </div>
-              <p id="nghi-khong-phep" class="text-purple-700 font-extrabold text-4xl leading-none">0</p>
-              <p class="text-gray-700 text-base">buổi</p>
+            <p id="nghi-co-phep" class="text-teal-700 font-extrabold text-4xl leading-none">0</p>
+            <p class="text-gray-700 text-base">buổi</p>
+          </div>
+          <div class="flex-1 bg-purple-100 border border-purple-300 rounded-xl p-6 shadow-md hover:shadow-lg transition cursor-default select-none" aria-label="Số buổi nghỉ không phép">
+            <div class="flex items-center gap-3 mb-4">
+              <i class="fas fa-times-circle text-purple-600 text-2xl"></i>
+              <p class="text-sm font-semibold text-purple-800">Nghỉ không phép</p>
+            </div>
+            <p id="nghi-khong-phep" class="text-purple-700 font-extrabold text-4xl leading-none">0</p>
+            <p class="text-gray-700 text-base">buổi</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="md:col-span-2">
+        <h2 class="flex items-center gap-3 text-blue-800 font-bold text-base mb-5 drop-shadow-sm">
+          <i class="fas fa-file-alt text-xl"></i> TỔNG KẾT
+        </h2>
+        <section class="summary-cards" aria-label="Tóm tắt kết quả học tập và rèn luyện">
+          <div class="kqht" role="region" aria-labelledby="ket-qua-text-label">
+            <div class="icon">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div>
+              <p class="label" id="ket-qua-text-label">Kết quả học tập</p>
+              <p id="ket-qua-text" class="value tracking-wider">Tốt</p>
             </div>
           </div>
-        </article>
-
-        <!-- Tổng kết -->
-        <article class="md:col-span-2">
-          <h2 class="flex items-center gap-3 text-blue-800 font-bold text-base mb-5 drop-shadow-sm">
-            <i class="fas fa-file-alt text-xl"></i> TỔNG KẾT
-          </h2>
-          <section class="summary-cards" aria-label="Tóm tắt kết quả học tập và rèn luyện">
-            <div class="kqht" role="region" aria-labelledby="ket-qua-text-label">
-              <div class="icon">
-                <i class="fas fa-graduation-cap"></i>
-              </div>
-              <div>
-                <p class="label" id="ket-qua-text-label">Kết quả học tập</p>
-                <p id="ket-qua-text" class="value tracking-wider">Tốt</p>
-              </div>
+          <div class="kqrl" role="region" aria-labelledby="ket-qua-renluyen-text-label">
+            <div class="icon">
+              <i class="fas fa-user-check"></i>
             </div>
-            <div class="kqrl" role="region" aria-labelledby="ket-qua-renluyen-text-label">
-              <div class="icon">
-                <i class="fas fa-user-check"></i>
-              </div>
-              <div>
-                <p class="label" id="ket-qua-renluyen-text-label">Kết quả rèn luyện</p>
-                <p class="value tracking-wider">Tốt</p>
-              </div>
+            <div>
+              <p class="label" id="ket-qua-renluyen-text-label">Kết quả rèn luyện</p>
+              <p class="value tracking-wider">Tốt</p>
             </div>
-            <div class="dtb" role="region" aria-labelledby="diem-trung-binh-label">
-              <div class="icon">
-                <i class="fas fa-calculator"></i>
-              </div>
-              <div>
-                <p class="label" id="diem-trung-binh-label">Điểm trung bình</p>
-                <p id="diem-trung-binh" class="value tracking-wider">0.0</p>
-              </div>
+          </div>
+          <div class="dtb" role="region" aria-labelledby="diem-trung-binh-label">
+            <div class="icon">
+              <i class="fas fa-calculator"></i>
             </div>
-            <div class="danhhieu" role="region" aria-labelledby="danh-hieu-label">
-              <div class="icon">
-                <i class="fas fa-star"></i>
-              </div>
-              <div>
-                <p class="label" id="danh-hieu-label">Danh hiệu</p>
-                <p id="danh-hieu-text" class="value tracking-wider">Học sinh Trung bình</p>
-              </div>
+            <div>
+              <p class="label" id="diem-trung-binh-label">Điểm trung bình</p>
+              <p id="diem-trung-binh" class="value tracking-wider">0.0</p>
             </div>
-          </section>
-        </article>
-      </section>
+          </div>
+          <div class="danhhieu" role="region" aria-labelledby="danh-hieu-label">
+            <div class="icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <div>
+              <p class="label" id="danh-hieu-label">Danh hiệu</p>
+              <p id="danh-hieu-text" class="value tracking-wider">Học sinh Trung bình</p>
+            </div>
+          </div>
+        </section>
+      </article>
+    </section>
 
-      <section class="mb-8">
-        <h2 class="flex items-center gap-3 text-blue-800 font-bold text-base mb-5 drop-shadow-sm">
-          <i class="fas fa-calendar-alt text-xl"></i> CHỌN HỌC KỲ
-        </h2>
-        <form class="flex flex-wrap gap-4 items-center text-base text-gray-900 font-semibold">
-          <label for="hocky-select" class="whitespace-nowrap">Học kỳ</label>
-          <select
-            id="hocky-select"
-            class="border border-gray-300 rounded-md text-gray-900 text-base py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer shadow-sm"
-          >
-            <option value="1">Học kỳ 1</option>
-            <option value="2">Học kỳ 2</option>
-            <option value="year">Cả năm</option>
-          </select>
-        </form>
-      </section>
+    <section class="mb-8">
+      <h2 class="flex items-center gap-3 text-blue-800 font-bold text-base mb-5 drop-shadow-sm">
+        <i class="fas fa-calendar-alt text-xl"></i> CHỌN HỌC KỲ
+      </h2>
+      <form class="flex flex-wrap gap-4 items-center text-base text-gray-900 font-semibold" aria-label="Chọn học kỳ">
+        <label for="hocky-select" class="whitespace-nowrap">Học kỳ</label>
+        <select
+          id="hocky-select"
+          class="border border-gray-300 rounded-md text-gray-900 text-base py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer shadow-sm"
+        >
+          <option value="1">Học kỳ 1</option>
+          <option value="2">Học kỳ 2</option>
+          <option value="year">Cả năm</option>
+        </select>
+      </form>
+    </section>
 
-      <section>
-        <h2 class="flex items-center gap-3 text-blue-800 font-bold text-base mb-5 drop-shadow-sm" id="table-title">
-          <i class="fas fa-clipboard-list text-xl"></i> BẢNG ĐIỂM
-        </h2>
-        <p class="font-semibold text-xs mb-4 text-gray-700 tracking-wide" id="table-description">ĐÁNH GIÁ BẰNG NHẬN XÉT KẾT HỢP ĐIỂM SỐ</p>
-        <div class="overflow-x-auto border border-gray-300 rounded-lg shadow-inner">
-          <table class="w-full text-left text-gray-900 text-sm border-collapse" id="score-table" role="table">
-            <thead id="table-head"></thead>
-            <tbody id="score-table-body"></tbody>
-          </table>
-        </div>
-      </section>
+    <section>
+      <h2 class="flex items-center gap-3 text-blue-800 font-bold text-base mb-5 drop-shadow-sm" id="table-title">
+        <i class="fas fa-clipboard-list text-xl"></i> BẢNG ĐIỂM
+      </h2>
+      <p class="font-semibold text-xs mb-4 text-gray-700 tracking-wide" id="table-description">ĐÁNH GIÁ BẰNG NHẬN XÉT KẾT HỢP ĐIỂM SỐ</p>
+      <div class="overflow-x-auto border border-gray-300 rounded-lg shadow-inner">
+        <table class="w-full text-left text-gray-900 text-sm border-collapse" id="score-table" role="table">
+          <thead id="table-head"></thead>
+          <tbody id="score-table-body"></tbody>
+        </table>
+      </div>
+    </section>
 
-      <section id="chart-container" aria-label="Biểu đồ điểm trung bình theo môn học" class="mt-10 rounded-xl">
-        <h2 class="flex items-center gap-3 text-blue-800 font-bold text-base mb-5 drop-shadow-sm">
-          <i class="fas fa-chart-bar text-xl"></i> BIỂU ĐỒ ĐIỂM TRUNG BÌNH
-        </h2>
-        <canvas id="scoresChart"></canvas>
-      </section>
-    </div>
+    <section id="chart-container" aria-label="Biểu đồ điểm trung bình theo môn học" class="mt-10 rounded-xl">
+      <h2 class="flex items-center gap-3 text-blue-800 font-bold text-base mb-5 drop-shadow-sm">
+        <i class="fas fa-chart-bar text-xl"></i> BIỂU ĐỒ ĐIỂM TRUNG BÌNH
+      </h2>
+      <canvas id="scoresChart"></canvas>
+    </section>
   </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Toggle show/hide mật khẩu
-  const togglePassword = document.getElementById('toggle-password');
-  const passwordInput = document.getElementById('password');
-  togglePassword.addEventListener('click', () => {
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-    togglePassword.classList.toggle('fa-eye-slash');
-    togglePassword.setAttribute('aria-pressed', togglePassword.classList.contains('fa-eye-slash'));
-  });
+  // Password toggle function
+  function togglePasswordVisibility(toggleBtn, inputField) {
+    toggleBtn.addEventListener('click', () => {
+      const type = inputField.type === 'password' ? 'text' : 'password';
+      inputField.type = type;
+      toggleBtn.classList.toggle('fa-eye-slash');
+      toggleBtn.setAttribute('aria-pressed', toggleBtn.classList.contains('fa-eye-slash'));
+    });
+    toggleBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleBtn.click();
+      }
+    });
+  }
+  togglePasswordVisibility(document.getElementById('toggle-password'), document.getElementById('password'));
+  togglePasswordVisibility(document.getElementById('toggle-reg-password'), document.getElementById('reg-password'));
+  togglePasswordVisibility(document.getElementById('toggle-reg-password-confirm'), document.getElementById('reg-password-confirm'));
 
-  // Đăng nhập client-side đơn giản
+  // Elements
   const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
   const errorMessage = document.getElementById('error-message');
+  const registerErrorMessage = document.getElementById('register-error-message');
+  const registerSuccessMessage = document.getElementById('register-success-message');
+  const switchToRegister = document.getElementById('switch-to-register');
+  const switchToLogin = document.getElementById('switch-to-login');
   const loginContainer = document.getElementById('login-container');
   const mainContent = document.getElementById('main-content');
   const logoutBtn = document.getElementById('logout-btn');
 
-  const USERNAME = "admin";
-  const PASSWORD = "123456";
+  // Constants
+  const ADMIN_USERNAME = "admin";
+  const ADMIN_PASSWORD = "123456";
+  const USERS_STORAGE_KEY = 'usersRegisteredApp';
+  const SCORES_STORAGE_PREFIX = 'scoresData_';
 
-  loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const username = loginForm.username.value.trim();
-    const password = loginForm.password.value.trim();
+  // Load users from localStorage
+  function loadUsers() {
+    const usersJson = localStorage.getItem(USERS_STORAGE_KEY);
+    if (usersJson) {
+      try {
+        return JSON.parse(usersJson);
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  }
 
-    if (username === USERNAME && password === PASSWORD) {
-      errorMessage.style.display = 'none';
-      loginContainer.classList.add('hidden');
-      mainContent.classList.remove('hidden');
-      mainContent.focus();
-      initializeApp();
-    } else {
-      errorMessage.textContent = "Tên đăng nhập hoặc mật khẩu không đúng.";
-      errorMessage.style.display = 'block';
-      loginForm.username.setAttribute('aria-invalid', 'true');
-      loginForm.password.setAttribute('aria-invalid', 'true');
+  // Save users to localStorage
+  function saveUsers(users) {
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+  }
+
+  // Check if username taken (including admin)
+  function isUsernameTaken(username) {
+    if (username.toLowerCase() === ADMIN_USERNAME) return true;
+    const users = loadUsers();
+    return users.some(u => u.username.toLowerCase() === username.toLowerCase());
+  }
+
+  // Clear all messages
+  function clearMessages() {
+    errorMessage.style.display = 'none';
+    registerErrorMessage.style.display = 'none';
+    registerSuccessMessage.style.display = 'none';
+  }
+
+  // Toggle between login and register forms
+  switchToRegister.addEventListener('click', () => {
+    clearMessages();
+    loginForm.classList.add('hidden');
+    registerForm.classList.remove('hidden');
+    registerForm.querySelector('input[name="reg-username"]').focus();
+  });
+  switchToRegister.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      switchToRegister.click();
+    }
+  });
+  switchToLogin.addEventListener('click', () => {
+    clearMessages();
+    registerForm.classList.add('hidden');
+    loginForm.classList.remove('hidden');
+    loginForm.querySelector('input[name="username"]').focus();
+  });
+  switchToLogin.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      switchToLogin.click();
     }
   });
 
-  logoutBtn.addEventListener('click', () => {
-    mainContent.classList.add('hidden');
-    loginContainer.classList.remove('hidden');
-    loginForm.username.value = '';
-    loginForm.password.value = '';
-    errorMessage.style.display = 'none';
-    loginForm.username.setAttribute('aria-invalid', 'false');
-    loginForm.password.setAttribute('aria-invalid', 'false');
-    loginForm.username.focus();
+  // Register form submission
+  registerForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    registerErrorMessage.style.display = 'none';
+    registerSuccessMessage.style.display = 'none';
+    const username = registerForm['reg-username'].value.trim();
+    const password = registerForm['reg-password'].value.trim();
+    const passwordConfirm = registerForm['reg-password-confirm'].value.trim();
+
+    if (!username || !password || !passwordConfirm) {
+      registerErrorMessage.textContent = "Vui lòng điền đầy đủ các trường.";
+      registerErrorMessage.style.display = 'block';
+      return;
+    }
+    if (isUsernameTaken(username)) {
+      registerErrorMessage.textContent = "Tên đăng nhập đã tồn tại hoặc không hợp lệ.";
+      registerErrorMessage.style.display = 'block';
+      return;
+    }
+    if (password !== passwordConfirm) {
+      registerErrorMessage.textContent = "Mật khẩu và xác nhận mật khẩu không khớp.";
+      registerErrorMessage.style.display = 'block';
+      return;
+    }
+
+    const users = loadUsers();
+    users.push({ username, password });
+    saveUsers(users);
+    registerSuccessMessage.textContent = "Đăng ký thành công! Bạn có thể đăng nhập ngay.";
+    registerSuccessMessage.style.display = 'block';
+    registerForm.reset();
   });
 
-  // Năm học -> Lớp
+  // Login form submission
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    errorMessage.style.display = 'none';
+    const username = loginForm.username.value.trim();
+    const password = loginForm.password.value.trim();
+
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      loginSuccess(username);
+      return;
+    }
+    const users = loadUsers();
+    const user = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+    if (user) {
+      loginSuccess(username);
+      return;
+    }
+    errorMessage.textContent = "Tên đăng nhập hoặc mật khẩu không đúng.";
+    errorMessage.style.display = 'block';
+    loginForm.username.setAttribute('aria-invalid', 'true');
+    loginForm.password.setAttribute('aria-invalid', 'true');
+  });
+
+  // Scores variables and data
   const namHocToLopMap = {
     '2023-2024': '6A1',
     '2024-2025': '7A1',
     '2025-2026': '8A1',
     '2026-2027': '9A1'
   };
-
-  const STORAGE_KEY = 'scoresDataStorage';
-  let scoresData = {};
   const subjects = [
     'Toán học',
     'Lịch sử và Địa lí',
@@ -472,17 +604,19 @@
   const namHocSelect = document.getElementById('namhoc');
   const classNameSpan = document.getElementById('class-name');
   const hockySelect = document.getElementById('hocky-select');
-
   let currentNamHoc;
   let currentHocKy;
+  let currentUsername = null;  // Store logged-in username
+  let scoresData = {};
 
-  function updateClassName() {
-    const lop = namHocToLopMap[currentNamHoc] || 'N/A';
-    classNameSpan.textContent = lop;
+  // Helper to get localStorage key for a user
+  function getStorageKeyForUser(username) {
+    return SCORES_STORAGE_PREFIX + username.toLowerCase();
   }
 
+  // Load scores data for the current user & year
   function loadScoresData() {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(getStorageKeyForUser(currentUsername));
     if (saved) {
       try {
         scoresData = JSON.parse(saved);
@@ -497,10 +631,24 @@
     }
   }
 
+  // Save scores data for the current user
   function saveScoresData() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(scoresData));
+    localStorage.setItem(getStorageKeyForUser(currentUsername), JSON.stringify(scoresData));
   }
 
+  // Reset scores data for current user and current school year
+  function resetScoresDataForCurrentYear() {
+    scoresData[currentNamHoc] = { 1: {}, 2: {} };
+    saveScoresData();
+  }
+
+  // Update displayed class name based on year
+  function updateClassName() {
+    const lop = namHocToLopMap[currentNamHoc] || 'N/A';
+    classNameSpan.textContent = lop;
+  }
+
+  // Scores calculations and UI updates:
   function calculateTBMForScores(txScores, giuaKy, cuoiKy) {
     const thuongXuyenSum = txScores.reduce((a, b) => a + b, 0);
     const thuongXuyenCount = txScores.length;
@@ -572,25 +720,40 @@
   }
 
   let scoresChart = null;
+  const ctx = document.getElementById('scoresChart').getContext('2d');
+
+  function calculateTBM(row) {
+    const thuongXuyenInputs = row.querySelectorAll('input.score-thuong-xuyen');
+    let txScores = [];
+    thuongXuyenInputs.forEach(input => {
+      const val = parseFloat(input.value);
+      txScores.push(!isNaN(val) ? val : 0);
+    });
+    const giuaKyInput = row.querySelector('input.score-giua-ky');
+    const giuaKyVal = giuaKyInput && !isNaN(parseFloat(giuaKyInput.value)) ? parseFloat(giuaKyInput.value) : 0;
+    const cuoiKyInput = row.querySelector('input.score-cuoi-ky');
+    const cuoiKyVal = cuoiKyInput && !isNaN(parseFloat(cuoiKyInput.value)) ? parseFloat(cuoiKyInput.value) : 0;
+    const tbm = calculateTBMForScores(txScores, giuaKyVal, cuoiKyVal);
+    const tbmCell = row.querySelector('.tbm-cell');
+    if (tbmCell) {
+      tbmCell.textContent = tbm.toFixed(1);
+    }
+    return tbm;
+  }
 
   function renderScores() {
     const tbody = document.getElementById('score-table-body');
     tbody.innerHTML = '';
-
     currentHocKy = hockySelect.value;
     currentNamHoc = namHocSelect.value;
-
     if (!scoresData[currentNamHoc]) {
       scoresData[currentNamHoc] = { 1: {}, 2: {} };
     }
-
     updateClassName();
     renderTableHeader(currentHocKy);
 
     let totalTBM = 0;
     let count = 0;
-
-    // Chuyên cần giả định 0 (có thể bổ sung cập nhật nếu có dữ liệu)
     document.getElementById('nghi-co-phep').textContent = '0';
     document.getElementById('nghi-khong-phep').textContent = '0';
 
@@ -636,11 +799,9 @@
         row.appendChild(tdNhanXet);
 
         tbody.appendChild(row);
-
         totalTBM += avgTBM;
         count++;
       });
-
       updateSummary(totalTBM, count);
     } else {
       subjects.forEach(subject => {
@@ -664,7 +825,6 @@
           input.inputMode = 'decimal';
           input.value = scoresData[currentNamHoc][currentHocKy]?.[subject]?.txScores?.[i] ?? 0;
           input.className = 'w-10 text-center text-gray-700 font-normal border border-gray-300 rounded score-thuong-xuyen';
-
           input.addEventListener('input', () => {
             let val = input.value.trim();
             if (val === '') {
@@ -677,7 +837,6 @@
             if (isNaN(numVal)) numVal = 0;
             if (numVal > 10) numVal = 10;
             if (numVal < 0) numVal = 0;
-
             scoresData[currentNamHoc][currentHocKy][subject] = scoresData[currentNamHoc][currentHocKy][subject] || { txScores: [] };
             scoresData[currentNamHoc][currentHocKy][subject].txScores[i] = numVal;
             calculateTBM(row);
@@ -698,7 +857,6 @@
         giuaKyInput.inputMode = 'decimal';
         giuaKyInput.value = scoresData[currentNamHoc][currentHocKy]?.[subject]?.giuaKy ?? 0;
         giuaKyInput.className = 'w-12 font-semibold text-blue-600 text-center border border-gray-300 rounded score-giua-ky';
-
         giuaKyInput.addEventListener('input', () => {
           let val = giuaKyInput.value.trim();
           if (val === '') return;
@@ -707,7 +865,6 @@
           if (isNaN(numVal)) numVal = 0;
           if (numVal > 10) numVal = 10;
           if (numVal < 0) numVal = 0;
-
           scoresData[currentNamHoc][currentHocKy][subject] = scoresData[currentNamHoc][currentHocKy][subject] || {};
           scoresData[currentNamHoc][currentHocKy][subject].giuaKy = numVal;
           calculateTBM(row);
@@ -727,7 +884,6 @@
         cuoiKyInput.inputMode = 'decimal';
         cuoiKyInput.value = scoresData[currentNamHoc][currentHocKy]?.[subject]?.cuoiKy ?? 0;
         cuoiKyInput.className = 'w-12 font-semibold text-blue-600 text-center border border-gray-300 rounded score-cuoi-ky';
-
         cuoiKyInput.addEventListener('input', () => {
           let val = cuoiKyInput.value.trim();
           if (val === '') return;
@@ -736,7 +892,6 @@
           if (isNaN(numVal)) numVal = 0;
           if (numVal > 10) numVal = 10;
           if (numVal < 0) numVal = 0;
-
           scoresData[currentNamHoc][currentHocKy][subject] = scoresData[currentNamHoc][currentHocKy][subject] || {};
           scoresData[currentNamHoc][currentHocKy][subject].cuoiKy = numVal;
           calculateTBM(row);
@@ -759,11 +914,9 @@
         row.appendChild(commentCell);
 
         tbody.appendChild(row);
-
         totalTBM += tbmValue;
         count++;
       });
-
       updateSummary(totalTBM, count);
     }
     updateChart();
@@ -790,48 +943,55 @@
     updateClassName();
     renderScores();
   });
-
   hockySelect.addEventListener('change', () => {
     currentHocKy = hockySelect.value;
     renderScores();
   });
 
-  function initializeApp() {
-    currentNamHoc = namHocSelect.value;
-    currentHocKy = hockySelect.value;
-    loadScoresData();
+  // Login success handler: key update is handling user scoresData per account
+  function loginSuccess(username) {
+    errorMessage.style.display = 'none';
+    loginForm.username.setAttribute('aria-invalid', 'false');
+    loginForm.password.setAttribute('aria-invalid', 'false');
+    loginContainer.classList.add('hidden');
+    mainContent.classList.remove('hidden');
+    mainContent.focus();
+
+    currentUsername = username.toLowerCase();
+
+    currentNamHoc = namHocSelect.value || Object.keys(namHocToLopMap)[0];
+
+    // Load user scores or reset if not exist
+    const saved = localStorage.getItem(getStorageKeyForUser(currentUsername));
+    if (!saved) {
+      scoresData = {};
+      scoresData[currentNamHoc] = { 1: {}, 2: {} };
+      saveScoresData();
+    } else {
+      loadScoresData();
+    }
     updateClassName();
     renderScores();
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    // Nội dung sẽ hiện sau đăng nhập thành công
+  logoutBtn.addEventListener('click', () => {
+    mainContent.classList.add('hidden');
+    loginContainer.classList.remove('hidden');
+    loginForm.username.value = '';
+    loginForm.password.value = '';
+    clearMessages();
+    loginForm.username.setAttribute('aria-invalid', 'false');
+    loginForm.password.setAttribute('aria-invalid', 'false');
+    loginForm.classList.remove('hidden');
+    registerForm.classList.add('hidden');
+    loginForm.username.focus();
+
+    // Clear current user session info
+    currentUsername = null;
+    scoresData = {};
   });
 
-  function calculateTBM(row) {
-    const thuongXuyenInputs = row.querySelectorAll('input.score-thuong-xuyen');
-    let txScores = [];
-    thuongXuyenInputs.forEach(input => {
-      const val = parseFloat(input.value);
-      txScores.push(!isNaN(val) ? val : 0);
-    });
-
-    const giuaKyInput = row.querySelector('input.score-giua-ky');
-    const giuaKyVal = giuaKyInput && !isNaN(parseFloat(giuaKyInput.value)) ? parseFloat(giuaKyInput.value) : 0;
-
-    const cuoiKyInput = row.querySelector('input.score-cuoi-ky');
-    const cuoiKyVal = cuoiKyInput && !isNaN(parseFloat(cuoiKyInput.value)) ? parseFloat(cuoiKyInput.value) : 0;
-
-    const tbm = calculateTBMForScores(txScores, giuaKyVal, cuoiKyVal);
-    const tbmCell = row.querySelector('.tbm-cell');
-    if (tbmCell) {
-      tbmCell.textContent = tbm.toFixed(1);
-    }
-    return tbm;
-  }
-
-  const ctx = document.getElementById('scoresChart').getContext('2d');
-
+  // Chart.js related functions
   function getChartData() {
     const selectedHocky = hockySelect.value;
     let labels = subjects;
@@ -898,8 +1058,22 @@
       });
     }
   }
-</script>
 
+  function initializeApp() {
+    currentNamHoc = namHocSelect.value;
+    currentHocKy = hockySelect.value;
+    loadScoresData();
+    updateClassName();
+    renderScores();
+  }
+
+  // Delay initializeApp because user must log in first to load data
+  // So initializeApp will be called inside loginSuccess
+
+  window.addEventListener('DOMContentLoaded', () => {
+    // No auto initialize app until logged in
+  });
+</script>
 </body>
 </html>
 
